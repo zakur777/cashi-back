@@ -8,3 +8,6 @@ dist/
 !.yarn/versions
 coverage/
 *.log
+
+requerimientos.md
+unidad-2.md
