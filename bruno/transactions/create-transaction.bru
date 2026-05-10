@@ -1,0 +1,21 @@
+meta {
+  name: Create Transaction
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/transactions
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "amount": 99.99,
+    "type": "expense",
+    "description": "Dinner",
+    "date": "2026-01-12T00:00:00.000Z",
+    "categoryId": 1
+  }
+}

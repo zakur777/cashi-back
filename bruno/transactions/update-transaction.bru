@@ -1,0 +1,18 @@
+meta {
+  name: Update Transaction
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{baseUrl}}/transactions/1
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "amount": 60,
+    "description": "Taxi"
+  }
+}

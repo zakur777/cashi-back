@@ -1,0 +1,17 @@
+meta {
+  name: Update Category
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{baseUrl}}/categories/1
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Transport"
+  }
+}
