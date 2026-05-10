@@ -8,6 +8,9 @@
     "start": "node src/index.ts",
     "test": "vitest run",
     "test:watch": "vitest",
+    "verify:bootstrap": "node scripts/verify-bootstrap.mjs",
+    "verify:docs": "node scripts/verify-docs.mjs",
+    "verify:ci": "yarn verify:bootstrap && yarn verify:docs && yarn test",
     "prisma:generate": "prisma generate",
     "prisma:migrate:dev": "prisma migrate dev",
     "prisma:migrate:deploy": "prisma migrate deploy"

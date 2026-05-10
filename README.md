@@ -102,6 +102,19 @@ Modo watch:
 yarn test:watch
 ```
 
+Verificación rápida de bootstrap/runtime y onboarding docs:
+
+```bash
+yarn verify:bootstrap
+yarn verify:docs
+```
+
+Verificación combinada para CI local (sin build):
+
+```bash
+yarn verify:ci
+```
+
 ## Endpoints
 
 | Método | Endpoint | Descripción |
