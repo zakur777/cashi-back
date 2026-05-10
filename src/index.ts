@@ -1,12 +1,14 @@
 import 'dotenv/config';
 import { serve } from '@hono/node-server';
 import { Hono } from 'hono';
+import { categoriesRoutes } from './routes/categories.routes.js';
 import { indexRoutes } from './routes/index.routes.js';
 
 export const app = new Hono();
 
 app.get('/', (c) => c.json({ name: 'cashi-api', status: 'running' }, 200));
 app.route('/', indexRoutes);
+app.route('/categories', categoriesRoutes);
 
 const port = Number(process.env.PORT ?? 3000);
 
