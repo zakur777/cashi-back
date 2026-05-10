@@ -1,0 +1,29 @@
+{
+  "name": "cashi-api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "node src/index.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate:dev": "prisma migrate dev",
+    "prisma:migrate:deploy": "prisma migrate deploy"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.14.4",
+    "@prisma/client": "^6.8.2",
+    "dotenv": "^16.5.0",
+    "hono": "^4.9.6",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^24.9.1",
+    "prisma": "^6.8.2",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
+    "vitest": "^2.1.8"
+  }
+}
