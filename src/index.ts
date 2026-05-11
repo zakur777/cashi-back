@@ -13,7 +13,8 @@ app.route('/categories', categoriesRoutes);
 app.route('/transactions', transactionsRoutes);
 
 const port = Number(process.env.PORT ?? 3000);
+const entrypointPath = process.argv[1] ? new URL(`file://${process.argv[1]}`).pathname : null;
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (entrypointPath && import.meta.url.endsWith(entrypointPath)) {
   serve({ fetch: app.fetch, port });
 }
