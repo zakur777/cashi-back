@@ -68,6 +68,11 @@ Generar cliente:
 yarn prisma:generate
 ```
 
+En Windows, si `yarn prisma:generate` falla con `EPERM` al renombrar
+`query_engine-windows.dll.node`, frená primero cualquier proceso Node/tsx que esté
+corriendo la API. Prisma no puede reemplazar ese DLL mientras la app lo tiene
+cargado.
+
 Crear/aplicar migración en desarrollo:
 
 ```bash
