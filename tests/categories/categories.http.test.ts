@@ -66,6 +66,21 @@ describe('categories routes', () => {
     expect(await response.json()).toEqual(transportCategory);
   });
 
+  it('accepts expanded mobile palette colors', async () => {
+    const blueCategory = { id: 3, name: 'Travel', type: 'expense', color: '#60A5FA' };
+    mockRepository.create.mockResolvedValueOnce(blueCategory);
+
+    const response = await app.request('/categories', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ name: 'Travel', type: 'expense', color: '#60A5FA' })
+    });
+
+    expect(response.status).toBe(201);
+    expect(mockRepository.create).toHaveBeenCalledWith({ name: 'Travel', type: 'expense', color: '#60A5FA' });
+    expect(await response.json()).toEqual(blueCategory);
+  });
+
   it('defaults category type and color when omitted', async () => {
     mockRepository.create.mockResolvedValueOnce(foodCategory);
 
@@ -84,7 +99,7 @@ describe('categories routes', () => {
     const response = await app.request('/categories', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ name: '', type: 'invalid', color: '#FFFFFF' })
+      body: JSON.stringify({ name: '', type: 'invalid', color: '#123456' })
     });
 
     expect(response.status).toBe(400);
