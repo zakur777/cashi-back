@@ -93,6 +93,18 @@ Desarrollo:
 yarn dev
 ```
 
+Health check esperado:
+
+```bash
+curl http://localhost:3000/health
+```
+
+Respuesta:
+
+```json
+{"status":"ok"}
+```
+
 ## Testing
 
 Run tests:
@@ -155,6 +167,25 @@ yarn verify:ci
   - `P2025` -> `404` (`Resource not found.`)
   - inesperados -> `500` (`Internal server error.`)
 
+## Integración con Cashi Mobile
+
+Para probar desde Expo Go en emulador Android, dejá la API escuchando en el puerto `3000` y en el repo mobile usá:
+
+```txt
+EXPO_PUBLIC_CASHI_DATA_SOURCE=backend
+EXPO_PUBLIC_CASHI_API_BASE_URL=http://127.0.0.1:3000
+```
+
+En el emulador hay que reenviar el puerto del host:
+
+```bash
+adb reverse tcp:3000 tcp:3000
+```
+
+El login de Cashi Mobile sigue siendo demo local. Esta API no implementa autenticación; expone categorías, transacciones y balance.
+
+Si la base está recién migrada, `/categories` y `/transactions` pueden devolver `[]`; la app permite crear los datos desde cero.
+
 ## Ejemplos rápidos de payload
 
 Crear categoría (`POST /categories`):
@@ -165,6 +196,14 @@ Crear categoría (`POST /categories`):
   "type": "expense",
   "color": "#EDF7BD"
 }
+```
+
+Colores de categoría aceptados por el contrato mobile/backend:
+
+```txt
+#281C59 #4E8D9C #85C79A #EDF7BD
+#FF8A7A #FFD166 #7DD3FC #A7F3D0
+#C9C4FF #F9A8D4 #FDBA74 #60A5FA
 ```
 
 Crear transacción (`POST /transactions`):
