@@ -161,7 +161,9 @@ Crear categoría (`POST /categories`):
 
 ```json
 {
-  "name": "Food"
+  "name": "Food",
+  "type": "expense",
+  "color": "#EDF7BD"
 }
 ```
 

@@ -10,6 +10,8 @@ datasource db {
 model Category {
   id           Int           @id @default(autoincrement())
   name         String        @unique
+  type         String        @default("expense")
+  color        String        @default("#EDF7BD")
   transactions Transaction[]
 }
 

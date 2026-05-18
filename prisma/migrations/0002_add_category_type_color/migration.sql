@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Category" ADD COLUMN "type" TEXT NOT NULL DEFAULT 'expense';
+ALTER TABLE "Category" ADD COLUMN "color" TEXT NOT NULL DEFAULT '#EDF7BD';

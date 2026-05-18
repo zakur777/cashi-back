@@ -16,27 +16,31 @@ vi.mock('../../src/repositories/categories.repository.js', () => ({
 
 import { app } from '../../src/index.js';
 
+const foodCategory = { id: 1, name: 'Food', type: 'expense', color: '#EDF7BD' };
+
+const transportCategory = { id: 2, name: 'Transport', type: 'expense', color: '#4E8D9C' };
+
 describe('categories routes', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('lists categories with 200', async () => {
-    mockRepository.findAll.mockResolvedValueOnce([{ id: 1, name: 'Food' }]);
+  it('lists categories with type and color and 200', async () => {
+    mockRepository.findAll.mockResolvedValueOnce([foodCategory]);
 
     const response = await app.request('/categories');
 
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual([{ id: 1, name: 'Food' }]);
+    expect(await response.json()).toEqual([foodCategory]);
   });
 
   it('gets a category by id with 200', async () => {
-    mockRepository.findById.mockResolvedValueOnce({ id: 1, name: 'Food' });
+    mockRepository.findById.mockResolvedValueOnce(foodCategory);
 
     const response = await app.request('/categories/1');
 
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ id: 1, name: 'Food' });
+    expect(await response.json()).toEqual(foodCategory);
   });
 
   it('returns 404 when category is missing', async () => {
@@ -49,23 +53,38 @@ describe('categories routes', () => {
   });
 
   it('creates a category with 201', async () => {
-    mockRepository.create.mockResolvedValueOnce({ id: 2, name: 'Transport' });
+    mockRepository.create.mockResolvedValueOnce(transportCategory);
 
     const response = await app.request('/categories', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ name: 'Transport' })
+      body: JSON.stringify({ name: 'Transport', type: 'expense', color: '#4E8D9C' })
     });
 
     expect(response.status).toBe(201);
-    expect(await response.json()).toEqual({ id: 2, name: 'Transport' });
+    expect(mockRepository.create).toHaveBeenCalledWith({ name: 'Transport', type: 'expense', color: '#4E8D9C' });
+    expect(await response.json()).toEqual(transportCategory);
+  });
+
+  it('defaults category type and color when omitted', async () => {
+    mockRepository.create.mockResolvedValueOnce(foodCategory);
+
+    const response = await app.request('/categories', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ name: 'Food' })
+    });
+
+    expect(response.status).toBe(201);
+    expect(mockRepository.create).toHaveBeenCalledWith({ name: 'Food', type: 'expense', color: '#EDF7BD' });
+    expect(await response.json()).toEqual(foodCategory);
   });
 
   it('returns 400 when create body is invalid', async () => {
     const response = await app.request('/categories', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ name: '' })
+      body: JSON.stringify({ name: '', type: 'invalid', color: '#FFFFFF' })
     });
 
     expect(response.status).toBe(400);
@@ -81,7 +100,7 @@ describe('categories routes', () => {
     const response = await app.request('/categories', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ name: 'Food' })
+      body: JSON.stringify({ name: 'Food', type: 'expense', color: '#EDF7BD' })
     });
 
     expect(response.status).toBe(409);
@@ -89,23 +108,25 @@ describe('categories routes', () => {
   });
 
   it('updates a category with 200', async () => {
-    mockRepository.update.mockResolvedValueOnce({ id: 1, name: 'Bills' });
+    const billsCategory = { id: 1, name: 'Bills', type: 'expense', color: '#281C59' };
+    mockRepository.update.mockResolvedValueOnce(billsCategory);
 
     const response = await app.request('/categories/1', {
       method: 'PATCH',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ name: 'Bills' })
+      body: JSON.stringify({ name: 'Bills', color: '#281C59' })
     });
 
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ id: 1, name: 'Bills' });
+    expect(mockRepository.update).toHaveBeenCalledWith(1, { name: 'Bills', color: '#281C59' });
+    expect(await response.json()).toEqual(billsCategory);
   });
 
   it('returns 400 when update body is invalid', async () => {
     const response = await app.request('/categories/1', {
       method: 'PATCH',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ name: '' })
+      body: JSON.stringify({ name: '', type: 'invalid' })
     });
 
     expect(response.status).toBe(400);
@@ -129,14 +150,14 @@ describe('categories routes', () => {
   });
 
   it('deletes a category with 200', async () => {
-    mockRepository.remove.mockResolvedValueOnce({ id: 1, name: 'Food' });
+    mockRepository.remove.mockResolvedValueOnce(foodCategory);
 
     const response = await app.request('/categories/1', {
       method: 'DELETE'
     });
 
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ id: 1, name: 'Food' });
+    expect(await response.json()).toEqual(foodCategory);
   });
 
   it('returns 404 when delete target is missing', async () => {

@@ -31,7 +31,7 @@ describe('transactions routes', () => {
         description: 'Salary',
         date: new Date('2026-01-10T00:00:00.000Z'),
         categoryId: 1,
-        category: { id: 1, name: 'Job' }
+        category: { id: 1, name: 'Job', type: 'income', color: '#85C79A' }
       }
     ]);
 
@@ -46,7 +46,7 @@ describe('transactions routes', () => {
         description: 'Salary',
         date: '2026-01-10T00:00:00.000Z',
         categoryId: 1,
-        category: { id: 1, name: 'Job' }
+        category: { id: 1, name: 'Job', type: 'income', color: '#85C79A' }
       }
     ]);
   });
@@ -59,7 +59,7 @@ describe('transactions routes', () => {
       description: 'Taxi',
       date: new Date('2026-01-11T00:00:00.000Z'),
       categoryId: 2,
-      category: { id: 2, name: 'Transport' }
+      category: { id: 2, name: 'Transport', type: 'expense', color: '#4E8D9C' }
     });
 
     const response = await app.request('/transactions/2');
@@ -72,7 +72,7 @@ describe('transactions routes', () => {
       description: 'Taxi',
       date: '2026-01-11T00:00:00.000Z',
       categoryId: 2,
-      category: { id: 2, name: 'Transport' }
+      category: { id: 2, name: 'Transport', type: 'expense', color: '#4E8D9C' }
     });
   });
 
@@ -93,7 +93,7 @@ describe('transactions routes', () => {
       description: 'Dinner',
       date: new Date('2026-01-12T00:00:00.000Z'),
       categoryId: 1,
-      category: { id: 1, name: 'Food' }
+      category: { id: 1, name: 'Food', type: 'expense', color: '#EDF7BD' }
     });
 
     const response = await app.request('/transactions', {
@@ -116,7 +116,7 @@ describe('transactions routes', () => {
       description: 'Dinner',
       date: '2026-01-12T00:00:00.000Z',
       categoryId: 1,
-      category: { id: 1, name: 'Food' }
+      category: { id: 1, name: 'Food', type: 'expense', color: '#EDF7BD' }
     });
   });
 
@@ -160,7 +160,7 @@ describe('transactions routes', () => {
       description: 'Uber',
       date: new Date('2026-01-12T00:00:00.000Z'),
       categoryId: 2,
-      category: { id: 2, name: 'Transport' }
+      category: { id: 2, name: 'Transport', type: 'expense', color: '#4E8D9C' }
     });
 
     const response = await app.request('/transactions/1', {
@@ -177,7 +177,7 @@ describe('transactions routes', () => {
       description: 'Uber',
       date: '2026-01-12T00:00:00.000Z',
       categoryId: 2,
-      category: { id: 2, name: 'Transport' }
+      category: { id: 2, name: 'Transport', type: 'expense', color: '#4E8D9C' }
     });
   });
 
@@ -203,7 +203,7 @@ describe('transactions routes', () => {
       description: null,
       date: new Date('2026-01-12T00:00:00.000Z'),
       categoryId: 1,
-      category: { id: 1, name: 'Food' }
+      category: { id: 1, name: 'Food', type: 'expense', color: '#EDF7BD' }
     });
 
     const response = await app.request('/transactions/1', { method: 'DELETE' });
@@ -216,7 +216,7 @@ describe('transactions routes', () => {
       description: null,
       date: '2026-01-12T00:00:00.000Z',
       categoryId: 1,
-      category: { id: 1, name: 'Food' }
+      category: { id: 1, name: 'Food', type: 'expense', color: '#EDF7BD' }
     });
   });
 
