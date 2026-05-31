@@ -10,6 +10,7 @@ coverage/
 *.log
 
 requerimientos.md
+requerimientos/
 unidad-2.md
 VIDEO_GUIDE.md
 # Local Pi runtime state
