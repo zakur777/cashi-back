@@ -20,7 +20,7 @@ La estructura sigue el flujo:
 
 - `src/routes`: define endpoints HTTP y mapea handlers.
 - `src/controllers`: parsea request, valida input, coordina casos de uso HTTP y arma response.
-- `src/repositories`: única capa que accede a Prisma/DB.
+- `src/repositories`: única capa que accede a Prisma/DB y expone interfaces TypeScript explícitas como contratos (`CategoriesRepository`, `TransactionsRepository`).
 - `src/schemas`: contratos Zod para validación.
 - `src/lib`: utilidades transversales (Prisma singleton, mapeo de errores).
 
@@ -111,6 +111,12 @@ Run tests:
 
 ```bash
 yarn test
+```
+
+Validar tipos sin emitir build:
+
+```bash
+yarn typecheck
 ```
 
 Modo watch:

@@ -1,0 +1,46 @@
+sdd:
+  version: 1
+  execution_mode: interactive
+  artifact_store: openspec
+  strict_tdd: true
+  chained_pr_strategy: auto-forecast
+  review_budget:
+    max_changed_lines: 400
+
+project:
+  name: cashi-app
+  stack:
+    language: TypeScript
+    runtime: Node.js
+    framework: Hono
+    orm: Prisma
+    database: PostgreSQL
+  testing:
+    runner: vitest
+    test_command: yarn test
+    watch_command: yarn test:watch
+    config_file: vitest.config.ts
+    test_glob: tests/**/*.test.ts
+
+phase_rules:
+  proposal:
+    require_tests_plan: true
+    allow_code_changes: false
+  spec:
+    require_contract_definition: true
+    allow_code_changes: false
+  design:
+    require_file_plan: true
+    allow_code_changes: false
+  tasks:
+    require_test_first_tasks: true
+    allow_code_changes: false
+  apply:
+    enforce_strict_tdd: true
+  verify:
+    run_required:
+      - yarn test
+
+current_goal:
+  summary: Planificar cambio para agregar interfaces TypeScript explícitas como contratos en repository/contracts según feedback del profesor.
+  implement_now: false

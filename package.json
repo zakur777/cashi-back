@@ -8,9 +8,10 @@
     "start": "node src/index.ts",
     "test": "vitest run",
     "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
     "verify:bootstrap": "node scripts/verify-bootstrap.mjs",
     "verify:docs": "node scripts/verify-docs.mjs",
-    "verify:ci": "yarn verify:bootstrap && yarn verify:docs && yarn test",
+    "verify:ci": "yarn verify:bootstrap && yarn verify:docs && yarn typecheck && yarn test",
     "prisma:generate": "prisma generate",
     "prisma:migrate:dev": "prisma migrate dev",
     "prisma:migrate:deploy": "prisma migrate deploy"
