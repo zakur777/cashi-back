@@ -14,7 +14,7 @@ const transactionBalanceSelect = {
 	type: true,
 } as const;
 
-type TransactionWithCategory = Prisma.TransactionGetPayload<{
+export type TransactionWithCategory = Prisma.TransactionGetPayload<{
 	include: typeof transactionInclude;
 }>;
 
@@ -23,20 +23,24 @@ type TransactionBalanceInput = Prisma.TransactionGetPayload<{
 }>;
 
 export interface TransactionsRepository {
-	findAll(): Promise<TransactionWithCategory[]>;
+	findAllByUserId(userId: number): Promise<TransactionWithCategory[]>;
 	findById(id: number): Promise<TransactionWithCategory | null>;
-	create(data: CreateTransactionInput): Promise<TransactionWithCategory>;
+	create(
+		data: CreateTransactionInput,
+		userId: number,
+	): Promise<TransactionWithCategory>;
 	update(
 		id: number,
 		data: UpdateTransactionInput,
 	): Promise<TransactionWithCategory>;
 	remove(id: number): Promise<TransactionWithCategory>;
-	findAllForBalance(): Promise<TransactionBalanceInput[]>;
+	findAllForBalanceByUserId(userId: number): Promise<TransactionBalanceInput[]>;
 }
 
 export const transactionsRepository: TransactionsRepository = {
-	findAll() {
+	findAllByUserId(userId: number) {
 		return prisma.transaction.findMany({
+			where: { userId },
 			orderBy: { id: "asc" },
 			include: transactionInclude,
 		});
@@ -47,9 +51,12 @@ export const transactionsRepository: TransactionsRepository = {
 			include: transactionInclude,
 		});
 	},
-	create(data: CreateTransactionInput) {
+	create(data: CreateTransactionInput, userId: number) {
 		return prisma.transaction.create({
-			data,
+			data: {
+				...data,
+				userId,
+			},
 			include: transactionInclude,
 		});
 	},
@@ -66,8 +73,9 @@ export const transactionsRepository: TransactionsRepository = {
 			include: transactionInclude,
 		});
 	},
-	findAllForBalance() {
+	findAllForBalanceByUserId(userId: number) {
 		return prisma.transaction.findMany({
+			where: { userId },
 			select: transactionBalanceSelect,
 		});
 	},

@@ -9,6 +9,10 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
+    "lint": "biome lint .",
+    "format": "biome format --write .",
+    "format:check": "biome format .",
+    "biome:check": "biome lint .",
     "verify:bootstrap": "node scripts/verify-bootstrap.mjs",
     "verify:docs": "node scripts/verify-docs.mjs",
     "verify:ci": "yarn verify:bootstrap && yarn verify:docs && yarn typecheck && yarn test",
@@ -17,13 +21,18 @@
     "prisma:migrate:deploy": "prisma migrate deploy"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1057.0",
     "@hono/node-server": "^1.14.4",
     "@prisma/client": "^6.8.2",
+    "bcryptjs": "^3.0.3",
     "dotenv": "^16.5.0",
     "hono": "^4.9.6",
-    "zod": "^3.25.76"
+    "jsonwebtoken": "^9.0.3",
+    "zod": "^4"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.4.16",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.9.1",
     "prisma": "^6.8.2",
     "tsx": "^4.20.6",

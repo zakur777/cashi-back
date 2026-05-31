@@ -1,4 +1,4 @@
-import { ZodError } from 'zod';
+import type { ZodError } from 'zod';
 import type { ContentfulStatusCode } from 'hono/utils/http-status';
 import { parsePrismaError } from './prisma-errors.js';
 

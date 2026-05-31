@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { signAuthToken } from '../../src/lib/auth-token.js';
 
 const { mockRepository } = vi.hoisted(() => ({
   mockRepository: {
@@ -19,16 +20,22 @@ import { app } from '../../src/index.js';
 const foodCategory = { id: 1, name: 'Food', type: 'expense', color: '#EDF7BD' };
 
 const transportCategory = { id: 2, name: 'Transport', type: 'expense', color: '#4E8D9C' };
+const authSecret = 'test-auth-secret';
+
+function authHeaders(userId = 1) {
+  return { authorization: `Bearer ${signAuthToken(userId)}` };
+}
 
 describe('categories routes', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    process.env.JWT_SECRET = authSecret;
   });
 
   it('lists categories with type and color and 200', async () => {
     mockRepository.findAll.mockResolvedValueOnce([foodCategory]);
 
-    const response = await app.request('/categories');
+    const response = await app.request('/categories', { headers: authHeaders() });
 
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual([foodCategory]);
@@ -37,7 +44,7 @@ describe('categories routes', () => {
   it('gets a category by id with 200', async () => {
     mockRepository.findById.mockResolvedValueOnce(foodCategory);
 
-    const response = await app.request('/categories/1');
+    const response = await app.request('/categories/1', { headers: authHeaders() });
 
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual(foodCategory);
@@ -46,7 +53,7 @@ describe('categories routes', () => {
   it('returns 404 when category is missing', async () => {
     mockRepository.findById.mockResolvedValueOnce(null);
 
-    const response = await app.request('/categories/999');
+    const response = await app.request('/categories/999', { headers: authHeaders() });
 
     expect(response.status).toBe(404);
     expect(await response.json()).toEqual({ error: 'Category not found.' });
@@ -57,7 +64,7 @@ describe('categories routes', () => {
 
     const response = await app.request('/categories', {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: { 'content-type': 'application/json', ...authHeaders() },
       body: JSON.stringify({ name: 'Transport', type: 'expense', color: '#4E8D9C' })
     });
 
@@ -72,7 +79,7 @@ describe('categories routes', () => {
 
     const response = await app.request('/categories', {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: { 'content-type': 'application/json', ...authHeaders() },
       body: JSON.stringify({ name: 'Travel', type: 'expense', color: '#60A5FA' })
     });
 
@@ -86,7 +93,7 @@ describe('categories routes', () => {
 
     const response = await app.request('/categories', {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: { 'content-type': 'application/json', ...authHeaders() },
       body: JSON.stringify({ name: 'Food' })
     });
 
@@ -98,7 +105,7 @@ describe('categories routes', () => {
   it('returns 400 when create body is invalid', async () => {
     const response = await app.request('/categories', {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: { 'content-type': 'application/json', ...authHeaders() },
       body: JSON.stringify({ name: '', type: 'invalid', color: '#123456' })
     });
 
@@ -114,7 +121,7 @@ describe('categories routes', () => {
 
     const response = await app.request('/categories', {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: { 'content-type': 'application/json', ...authHeaders() },
       body: JSON.stringify({ name: 'Food', type: 'expense', color: '#EDF7BD' })
     });
 
@@ -128,7 +135,7 @@ describe('categories routes', () => {
 
     const response = await app.request('/categories/1', {
       method: 'PATCH',
-      headers: { 'content-type': 'application/json' },
+      headers: { 'content-type': 'application/json', ...authHeaders() },
       body: JSON.stringify({ name: 'Bills', color: '#281C59' })
     });
 
@@ -140,7 +147,7 @@ describe('categories routes', () => {
   it('returns 400 when update body is invalid', async () => {
     const response = await app.request('/categories/1', {
       method: 'PATCH',
-      headers: { 'content-type': 'application/json' },
+      headers: { 'content-type': 'application/json', ...authHeaders() },
       body: JSON.stringify({ name: '', type: 'invalid' })
     });
 
@@ -156,7 +163,7 @@ describe('categories routes', () => {
 
     const response = await app.request('/categories/999', {
       method: 'PATCH',
-      headers: { 'content-type': 'application/json' },
+      headers: { 'content-type': 'application/json', ...authHeaders() },
       body: JSON.stringify({ name: 'Bills' })
     });
 
@@ -168,7 +175,8 @@ describe('categories routes', () => {
     mockRepository.remove.mockResolvedValueOnce(foodCategory);
 
     const response = await app.request('/categories/1', {
-      method: 'DELETE'
+      method: 'DELETE',
+      headers: authHeaders()
     });
 
     expect(response.status).toBe(200);
@@ -180,10 +188,44 @@ describe('categories routes', () => {
     mockRepository.remove.mockRejectedValueOnce(error);
 
     const response = await app.request('/categories/999', {
-      method: 'DELETE'
+      method: 'DELETE',
+      headers: authHeaders()
     });
 
     expect(response.status).toBe(404);
     expect(await response.json()).toEqual({ error: 'Resource not found.' });
+  });
+
+  it('rejects missing and invalid tokens with 401 before reaching category repository', async () => {
+    const missingResponse = await app.request('/categories');
+    const malformedResponse = await app.request('/categories', {
+      headers: { authorization: 'Token abc' }
+    });
+    const invalidResponse = await app.request('/categories', {
+      headers: { authorization: 'Bearer invalid-token' }
+    });
+
+    expect(missingResponse.status).toBe(401);
+    expect(await missingResponse.json()).toEqual({ error: 'Unauthorized.' });
+    expect(malformedResponse.status).toBe(401);
+    expect(await malformedResponse.json()).toEqual({ error: 'Unauthorized.' });
+    expect(invalidResponse.status).toBe(401);
+    expect(await invalidResponse.json()).toEqual({ error: 'Unauthorized.' });
+    expect(mockRepository.findAll).not.toHaveBeenCalled();
+  });
+
+  it('keeps categories global for different authenticated users', async () => {
+    mockRepository.findAll
+      .mockResolvedValueOnce([foodCategory, transportCategory])
+      .mockResolvedValueOnce([foodCategory, transportCategory]);
+
+    const firstUserResponse = await app.request('/categories', { headers: authHeaders(1) });
+    const secondUserResponse = await app.request('/categories', { headers: authHeaders(2) });
+
+    expect(firstUserResponse.status).toBe(200);
+    expect(secondUserResponse.status).toBe(200);
+    expect(await firstUserResponse.json()).toEqual([foodCategory, transportCategory]);
+    expect(await secondUserResponse.json()).toEqual([foodCategory, transportCategory]);
+    expect(mockRepository.findAll).toHaveBeenCalledTimes(2);
   });
 });
