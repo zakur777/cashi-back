@@ -322,20 +322,6 @@ Balance (`GET /transactions/balance`):
 }
 ```
 
-## Checklist de video demostrativo
-
-Flujo mínimo para demostrar el requerimiento 3:
-
-- [ ] Levantar Docker/PostgreSQL y la API.
-- [ ] Ejecutar register → login → copiar token → upload multipart `receipt` → crear transacción con `receiptUrl` → consultar balance.
-- [ ] Mostrar que `/categories` o `/transactions` sin token responde `401`.
-- [ ] Crear dos usuarios y demostrar que `GET /transactions`/balance muestra solo datos del usuario autenticado.
-- [ ] Intentar editar o eliminar una transacción ajena y mostrar `403`.
-- [ ] Consultar un id inexistente y mostrar `404`.
-- [ ] Explicar dónde vive el middleware: `src/middlewares/auth.middleware.ts`.
-- [ ] Explicar por qué el ownership check está en `src/controllers/transactions.controller.ts` y no en el repository.
-- [ ] Mostrar que el upload usa Cloudflare R2 y que `receiptUrl` se usa al crear/editar una transacción.
-
 ## Integración con Cashi Mobile
 
 Para probar desde Expo Go en emulador Android, dejá la API escuchando en el puerto `3000` y en el repo mobile usá:
@@ -358,7 +344,7 @@ La app móvil debe enviar el token JWT en `Authorization: Bearer {token}` para c
 La colección Bruno está en `bruno/` e incluye:
 
 - Health
-- Auth: register, login y segundo usuario para demo de ownership
+- Auth: register, login y segundo usuario para validar ownership
 - Categories CRUD
 - Transactions CRUD
 - Upload multipart de comprobante (`POST /transactions/upload`) con fixture en `bruno/fixtures/cashi-receipt-test.png`
@@ -366,21 +352,6 @@ La colección Bruno está en `bruno/` e incluye:
 - Casos de seguridad: transacción ajena `403` y transacción inexistente `404`
 
 Usar el environment `Local`, donde `baseUrl` apunta a `http://localhost:3000`.
-
-Orden recomendado para grabar el video:
-
-1. `Health / 1-Get Health`
-2. `auth / 2-Register`
-3. `auth / 3-Login`
-4. `categories / 4-Create Category`
-5. `categories / 5-List Categories`
-6. `transactions / 6-Upload Receipt`
-7. `transactions / 7-Create Transaction`
-8. `transactions / 8-List Transactions`
-9. `transactions / 9-Get Balance`
-10. `auth / Register Second User`
-11. `transactions / Get Foreign Transaction 403`
-12. `transactions / Get Missing Transaction 404`
 
 Las requests de auth guardan `authToken`/`userBToken` como variables de Bruno, y las requests de creación guardan `categoryId`, `receiptUrl` y `transactionId` para encadenar el flujo. Si Bruno no toma automáticamente el archivo del upload, seleccionar manualmente `bruno/fixtures/cashi-receipt-test.png` en el campo multipart `receipt`.
 
