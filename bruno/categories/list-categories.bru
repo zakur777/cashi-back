@@ -1,5 +1,5 @@
 meta {
-  name: List Categories
+  name: 5-List Categories
   type: http
   seq: 1
 }
@@ -8,4 +8,8 @@ get {
   url: {{baseUrl}}/categories
   body: none
   auth: none
+}
+
+headers {
+  Authorization: Bearer {{authToken}}
 }

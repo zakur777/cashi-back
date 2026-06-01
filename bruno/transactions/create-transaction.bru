@@ -1,7 +1,7 @@
 meta {
-  name: Create Transaction
+  name: 7-Create Transaction
   type: http
-  seq: 3
+  seq: 4
 }
 
 post {
@@ -10,12 +10,27 @@ post {
   auth: none
 }
 
+headers {
+  Authorization: Bearer {{authToken}}
+}
+
 body:json {
   {
-    "amount": 99.99,
+    "amount": 42.5,
     "type": "expense",
-    "description": "Dinner",
-    "date": "2026-01-12T00:00:00.000Z",
-    "categoryId": 1
+    "description": "Dinner with receipt",
+    "date": "2026-06-01T02:40:00.000Z",
+    "receiptUrl": "{{receiptUrl}}",
+    "latitude": -34.6037,
+    "longitude": -58.3816,
+    "categoryId": {{categoryId}}
+  }
+}
+
+script:post-response {
+  const body = res.getBody();
+  if (res.getStatus() === 201 && body?.id) {
+    bru.setVar("transactionId", String(body.id));
+    bru.setVar("foreignTransactionId", String(body.id));
   }
 }

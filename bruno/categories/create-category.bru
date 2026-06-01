@@ -1,5 +1,5 @@
 meta {
-  name: Create Category
+  name: 4-Create Category
   type: http
   seq: 3
 }
@@ -10,10 +10,21 @@ post {
   auth: none
 }
 
+headers {
+  Authorization: Bearer {{authToken}}
+}
+
 body:json {
   {
-    "name": "Food",
+    "name": "Food Demo",
     "type": "expense",
     "color": "#EDF7BD"
+  }
+}
+
+script:post-response {
+  const body = res.getBody();
+  if (res.getStatus() === 201 && body?.id) {
+    bru.setVar("categoryId", String(body.id));
   }
 }

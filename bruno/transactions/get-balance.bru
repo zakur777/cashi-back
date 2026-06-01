@@ -1,11 +1,15 @@
 meta {
-  name: Get Balance
+  name: 9-Get Balance
   type: http
-  seq: 6
+  seq: 7
 }
 
 get {
   url: {{baseUrl}}/transactions/balance
   body: none
   auth: none
+}
+
+headers {
+  Authorization: Bearer {{authToken}}
 }

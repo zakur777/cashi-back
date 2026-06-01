@@ -5,7 +5,11 @@ meta {
 }
 
 get {
-  url: {{baseUrl}}/transactions/1
+  url: {{baseUrl}}/transactions/{{transactionId}}
   body: none
   auth: none
+}
+
+headers {
+  Authorization: Bearer {{authToken}}
 }

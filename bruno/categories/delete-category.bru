@@ -5,7 +5,11 @@ meta {
 }
 
 delete {
-  url: {{baseUrl}}/categories/1
+  url: {{baseUrl}}/categories/{{categoryId}}
   body: none
   auth: none
+}
+
+headers {
+  Authorization: Bearer {{authToken}}
 }

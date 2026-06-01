@@ -1,0 +1,29 @@
+meta {
+  name: 3-Login
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/auth/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "ada@example.com",
+    "password": "password123"
+  }
+}
+
+vars:pre-request {
+  baseUrl: http://localhost:3000
+}
+
+script:post-response {
+  const body = res.getBody();
+  if (res.getStatus() === 200 && body?.token) {
+    bru.setVar("authToken", body.token);
+  }
+}

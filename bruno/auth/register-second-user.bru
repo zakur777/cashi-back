@@ -1,0 +1,29 @@
+meta {
+  name: Register Second User
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/auth/register
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "grace@example.com",
+    "password": "password123"
+  }
+}
+
+vars:pre-request {
+  baseUrl: http://localhost:3000
+}
+
+script:post-response {
+  const body = res.getBody();
+  if (res.getStatus() === 201 && body?.token) {
+    bru.setVar("userBToken", body.token);
+  }
+}

@@ -1,0 +1,26 @@
+meta {
+  name: 6-Upload Receipt
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/transactions/upload
+  body: multipart-form
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{authToken}}
+}
+
+body:multipart-form {
+  receipt: @file(fixtures/cashi-receipt-test.png)
+}
+
+script:post-response {
+  const body = res.getBody();
+  if (res.getStatus() === 201 && body?.receiptUrl) {
+    bru.setVar("receiptUrl", body.receiptUrl);
+  }
+}

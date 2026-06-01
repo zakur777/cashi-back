@@ -1,13 +1,17 @@
 meta {
   name: Update Transaction
   type: http
-  seq: 4
+  seq: 5
 }
 
 patch {
-  url: {{baseUrl}}/transactions/1
+  url: {{baseUrl}}/transactions/{{transactionId}}
   body: json
   auth: none
+}
+
+headers {
+  Authorization: Bearer {{authToken}}
 }
 
 body:json {

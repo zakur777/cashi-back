@@ -5,9 +5,13 @@ meta {
 }
 
 patch {
-  url: {{baseUrl}}/categories/1
+  url: {{baseUrl}}/categories/{{categoryId}}
   body: json
   auth: none
+}
+
+headers {
+  Authorization: Bearer {{authToken}}
 }
 
 body:json {

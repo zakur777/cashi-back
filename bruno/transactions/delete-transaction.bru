@@ -1,11 +1,15 @@
 meta {
   name: Delete Transaction
   type: http
-  seq: 5
+  seq: 6
 }
 
 delete {
-  url: {{baseUrl}}/transactions/1
+  url: {{baseUrl}}/transactions/{{transactionId}}
   body: none
   auth: none
+}
+
+headers {
+  Authorization: Bearer {{authToken}}
 }

@@ -1,5 +1,5 @@
 meta {
-  name: List Transactions
+  name: 8-List Transactions
   type: http
   seq: 1
 }
@@ -8,4 +8,8 @@ get {
   url: {{baseUrl}}/transactions
   body: none
   auth: none
+}
+
+headers {
+  Authorization: Bearer {{authToken}}
 }
