@@ -131,9 +131,9 @@ Respuesta:
 
 ## Despliegue productivo en Render
 
-URL productiva de la API: `https://replace-with-render-url.onrender.com`
+URL productiva de la API: `https://cashi-api-pphe.onrender.com`
 
-Reemplazar el placeholder anterior cuando Render asigne la URL pública del Web Service. El endpoint de smoke check es `/health`.
+El endpoint de smoke check es `/health`.
 
 El repositorio incluye `render.yaml` como Blueprint para crear:
 
@@ -162,10 +162,12 @@ Fallback seguro si `preDeployCommand` no está disponible o falla por configurac
 2. Ejecutar `yarn prisma:migrate:deploy` una vez contra la `DATABASE_URL` productiva inyectada por Render.
 3. Si Render Shell no está disponible, copiar temporalmente `DATABASE_URL` desde Render a una terminal local segura, ejecutar `yarn prisma:migrate:deploy`, y eliminarla de la terminal/archivo local al terminar. No commitear esa URL.
 
+Nota operativa: en Render Free no hay Shell ni One-Off Jobs. Para este despliegue se usó el fallback local seguro anterior para aplicar migraciones antes del smoke productivo.
+
 Validación de smoke en PowerShell:
 
 ```powershell
-$env:RENDER_URL="https://replace-with-render-url.onrender.com"
+$env:RENDER_URL="https://cashi-api-pphe.onrender.com"
 curl.exe "$env:RENDER_URL/health"
 ```
 
@@ -173,14 +175,14 @@ Respuesta esperada:
 
 ```json
 {
-  "status": "ready",
+  "status": "ok",
   "checks": {
-    "database": "ok"
+    "database": "reachable"
   }
 }
 ```
 
-Para verificar auto-deploy, abrir el deploy más reciente en Render y confirmar estado `Live`, rama, y commit SHA contra el commit de GitHub que contiene este cambio.
+Para verificar auto-deploy, abrir el deploy más reciente en Render y confirmar estado `Live`, rama, y commit SHA contra el commit de GitHub que contiene este cambio. El despliegue productivo validado corresponde al commit `e9e8109a78c666aec73f63602738fc2c1fa8ae22`.
 
 ## Testing
 

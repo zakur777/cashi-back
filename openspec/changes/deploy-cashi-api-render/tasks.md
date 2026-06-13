@@ -49,7 +49,7 @@ One PR is preferred unless implementation exceeds the 400-line budget.
 ## Phase 4: Documentation, Hygiene, Verification
 
 - [x] 4.1 Update `.gitignore` for `.env.*` with `!.env.example`, private Bruno secret material, and generated outputs.
-- [x] 4.2 Update `README.md` with Render URL placeholder, setup checklist, auto-deploy commit SHA evidence, `/health` smoke command, and preserve AI declaration.
+- [x] 4.2 Update `README.md` with Render URL documentation, setup checklist, auto-deploy commit SHA evidence, `/health` smoke command, and preserve AI declaration.
 - [x] 4.3 Final local acceptance: `yarn build; if ($?) { yarn typecheck }; if ($?) { yarn test }; if ($?) { yarn lint }`.
 - [x] Verification remediation: production `/health` fails with 503 when required database configuration is missing, invalid, or unreachable.
-- [ ] 4.4 Post-deploy acceptance: `curl.exe "$env:RENDER_URL/health"`, confirm Render commit SHA, and run Bruno Production flow.
+- [x] 4.4 Post-deploy acceptance: production `/health` at `https://cashi-api-pphe.onrender.com/health` returned `{"status":"ok","checks":{"database":"reachable"}}`; Render deployed commit `e9e8109a78c666aec73f63602738fc2c1fa8ae22`; Bruno Production smoke flow passed after applying migrations with the documented local fallback for Render Free.
