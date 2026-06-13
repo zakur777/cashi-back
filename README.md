@@ -129,6 +129,59 @@ Respuesta:
 {"status":"ok"}
 ```
 
+## Despliegue productivo en Render
+
+URL productiva de la API: `https://replace-with-render-url.onrender.com`
+
+Reemplazar el placeholder anterior cuando Render asigne la URL pública del Web Service. El endpoint de smoke check es `/health`.
+
+El repositorio incluye `render.yaml` como Blueprint para crear:
+
+- Un Web Service Node (`cashi-api`) conectado al repo de GitHub con auto-deploy por commit.
+- Una base Render PostgreSQL (`cashi-db`) inyectada como `DATABASE_URL`.
+- Variables secretas gestionadas por Render, sin valores reales en archivos versionados.
+
+Checklist de configuración en Render:
+
+1. Crear el Blueprint desde el repo de GitHub y confirmar la rama de despliegue.
+2. Revisar que `DATABASE_URL` venga desde la base `cashi-db`.
+3. Dejar `JWT_SECRET` generado por Render o configurar un valor largo y aleatorio desde el dashboard.
+4. Completar manualmente las variables R2 marcadas como `sync: false`: `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET_NAME` y `R2_PUBLIC_URL`.
+5. Confirmar que el build use `yarn install --frozen-lockfile --production=false && yarn prisma:generate && yarn build`.
+6. Confirmar que el pre-deploy use `yarn prisma:migrate:deploy` y el start command use `yarn start`.
+
+Render debe ejecutar migraciones Prisma antes de aceptar tráfico mediante:
+
+```bash
+yarn prisma:migrate:deploy
+```
+
+Fallback seguro si `preDeployCommand` no está disponible o falla por configuración del servicio:
+
+1. Abrir Render Shell para el Web Service.
+2. Ejecutar `yarn prisma:migrate:deploy` una vez contra la `DATABASE_URL` productiva inyectada por Render.
+3. Si Render Shell no está disponible, copiar temporalmente `DATABASE_URL` desde Render a una terminal local segura, ejecutar `yarn prisma:migrate:deploy`, y eliminarla de la terminal/archivo local al terminar. No commitear esa URL.
+
+Validación de smoke en PowerShell:
+
+```powershell
+$env:RENDER_URL="https://replace-with-render-url.onrender.com"
+curl.exe "$env:RENDER_URL/health"
+```
+
+Respuesta esperada:
+
+```json
+{
+  "status": "ready",
+  "checks": {
+    "database": "ok"
+  }
+}
+```
+
+Para verificar auto-deploy, abrir el deploy más reciente en Render y confirmar estado `Live`, rama, y commit SHA contra el commit de GitHub que contiene este cambio.
+
 ## Testing
 
 Run tests:
@@ -351,9 +404,19 @@ La colección Bruno está en `bruno/` e incluye:
 - Balance
 - Casos de seguridad: transacción ajena `403` y transacción inexistente `404`
 
-Usar el environment `Local`, donde `baseUrl` apunta a `http://localhost:3000`.
+Usar el environment `Local`, donde `baseUrl` apunta a `http://localhost:3000`. Para validar Render, seleccionar el environment `Production` y reemplazar `baseUrl` por la URL pública real.
 
 Las requests de auth guardan `authToken`/`userBToken` como variables de Bruno, y las requests de creación guardan `categoryId`, `receiptUrl` y `transactionId` para encadenar el flujo. Si Bruno no toma automáticamente el archivo del upload, seleccionar manualmente `bruno/fixtures/cashi-receipt-test.png` en el campo multipart `receipt`.
+
+### Flujo de validación Bruno Production
+
+1. Seleccionar el environment `Production`.
+2. Actualizar `baseUrl` con la URL pública de Render.
+3. Ejecutar `Health / Get Health` y confirmar `200` con `{ "status": "ok" }`.
+4. Ejecutar `Auth / 2-Register` o `Auth / 3-Login` para guardar `authToken` localmente.
+5. Ejecutar `Categories / List Categories` y requests CRUD representativas.
+6. Ejecutar `Transactions / Create Transaction`, `List Transactions`, `Get Balance` y casos `403`/`404` cuando existan IDs de prueba.
+7. Ejecutar `Transactions / Upload Receipt` solo cuando las variables R2 estén configuradas en Render; los tokens, credenciales y datos de prueba deben quedar como variables locales de Bruno, no versionadas.
 
 ## Declaración de uso de IA
 

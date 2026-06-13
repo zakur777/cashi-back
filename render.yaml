@@ -1,0 +1,40 @@
+version: "1"
+
+services:
+  - type: web
+    name: cashi-api
+    runtime: node
+    plan: free
+    autoDeploy: true
+    autoDeployTrigger: commit
+    healthCheckPath: /health
+    buildCommand: yarn install --frozen-lockfile --production=false && yarn prisma:generate && yarn build
+    preDeployCommand: yarn prisma:migrate:deploy
+    startCommand: yarn start
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: cashi-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: R2_ACCOUNT_ID
+        sync: false
+      - key: R2_ACCESS_KEY_ID
+        sync: false
+      - key: R2_SECRET_ACCESS_KEY
+        sync: false
+      - key: R2_BUCKET_NAME
+        sync: false
+      - key: R2_PUBLIC_URL
+        sync: false
+
+databases:
+  - name: cashi-db
+    databaseName: cashi_db
+    user: cashi
+    plan: free

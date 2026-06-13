@@ -1,15 +1,35 @@
 import { Hono } from "hono";
-import { describe, expect, it, beforeEach } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { app } from "../../src/index.js";
 import { signAuthToken } from "../../src/lib/auth-token.js";
 import { authMiddleware } from "../../src/middlewares/auth.middleware.js";
 import type { AppEnv } from "../../src/types/app-env.js";
 
 const authSecret = "test-auth-secret";
+const originalNodeEnv = process.env.NODE_ENV;
+const originalDatabaseUrl = process.env.DATABASE_URL;
+
+function restoreRuntimeEnv() {
+	if (originalNodeEnv === undefined) {
+		delete process.env.NODE_ENV;
+	} else {
+		process.env.NODE_ENV = originalNodeEnv;
+	}
+
+	if (originalDatabaseUrl === undefined) {
+		delete process.env.DATABASE_URL;
+	} else {
+		process.env.DATABASE_URL = originalDatabaseUrl;
+	}
+}
 
 describe("app bootstrap", () => {
 	beforeEach(() => {
 		process.env.JWT_SECRET = authSecret;
+	});
+
+	afterEach(() => {
+		restoreRuntimeEnv();
 	});
 
 	it("keeps root and health public", async () => {
@@ -23,6 +43,20 @@ describe("app bootstrap", () => {
 		});
 		expect(healthResponse.status).toBe(200);
 		expect(await healthResponse.json()).toEqual({ status: "ok" });
+	});
+
+	it("makes production health unhealthy when DATABASE_URL is missing", async () => {
+		process.env.NODE_ENV = "production";
+		delete process.env.DATABASE_URL;
+
+		const response = await app.request("/health");
+
+		expect(response.status).toBe(503);
+		expect(await response.json()).toEqual({
+			status: "unhealthy",
+			checks: { database: "unconfigured" },
+			error: "DATABASE_URL is required in production.",
+		});
 	});
 
 	it("keeps auth endpoints public", async () => {

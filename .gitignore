@@ -1,6 +1,8 @@
 node_modules/
 dist/
 .env
+.env.*
+!.env.example
 .yarn/
 !.yarn/releases
 !.yarn/plugins
@@ -8,6 +10,9 @@ dist/
 !.yarn/versions
 coverage/
 *.log
+bruno/environments/*.local.bru
+bruno/environments/*.private.bru
+bruno/environments/*.secret.bru
 
 requerimientos.md
 requerimientos/

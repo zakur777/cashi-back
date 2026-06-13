@@ -14,10 +14,6 @@ headers {
   Authorization: Bearer {{authToken}}
 }
 
-vars:pre-request {
-  baseUrl: http://localhost:3000
-}
-
 script:post-response {
   test("returns 404 for a missing transaction", function () {
     expect(res.getStatus()).to.equal(404);
